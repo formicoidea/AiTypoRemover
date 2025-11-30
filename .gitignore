@@ -1,0 +1,25 @@
+# Dépendances
+node_modules/
+pnpm-lock.yaml
+
+# Build
+dist/
+*.log
+
+# Fichiers temporaires
+.tmp/
+temp/
+.DS_Store
+
+# IDE / éditeurs
+.vscode/
+.idea/
+*.iml
+
+# Tests / coverage éventuels
+coverage/
+.nyc_output/
+
+# Divers
+.env
+.env.local
