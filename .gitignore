@@ -23,5 +23,5 @@ coverage/
 # Divers
 .env
 .env.local
-.zip
+AiTypoRemover.zip
 images/
