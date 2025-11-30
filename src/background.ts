@@ -1,5 +1,4 @@
 // src/background.ts
-import { cleanAiText } from "./textCleaner";
 import { defaultCleanerOptions, CleanerOptions } from "./types";
 
 const MENU_ID = "remove-unwanted-characters";
@@ -30,10 +29,45 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 		const results = await chrome.scripting.executeScript({
 			target: { tabId: tab.id },
 			func: (opts: CleanerOptions) => {
+				/**
+				 * Nettoie le texte des caractères "indésirables" ajoutés par certaines IA.
+				 * Tu peux enrichir cette fonction avec d'autres remplacements au fil du temps.
+				 */
+				function cleanAiText(input: string): string {
+					// 1. Espaces “bizarres” -> espace normal (toujours appliqué)
+					const weirdSpaces =
+						/[\u00A0\u202F\u2007\u2009\u200A\u200B\u200C\u200D\u2060]/g;
+					let output = input.replace(weirdSpaces, " ");
+
+					// 2. Apostrophes
+					if (opts.normalizeApostrophes) {
+						const typographicApostrophes = /[’ʻʼˮ]/g;
+						output = output.replace(typographicApostrophes, "'");
+					}
+
+					// 3. Guillemets
+					if (opts.normalizeQuotes) {
+						// Espaces autour de « » puis remplacement
+						output = output
+							.replace(/«\s+/g, "«")
+							.replace(/\s+»/g, "»")
+							.replace(/[“”«»]/g, '"')
+							.replace(/[‚‘‛]/g, "'");
+					}
+
+					//4. Ecriture inclusive
+					if (opts.inclusiveLanguage) {
+						const inclusiveRegex = /(?<=\p{L})\.(?=\p{L})/gu;
+						output = output.replace(inclusiveRegex, "·");
+					}
+
+					// 4. Normalisation finale
+					return output.normalize("NFC");
+				}
 
 				const selection = window.getSelection();
 				const rawText = selection ? selection.toString() : "";
-				const cleaned = cleanAiText(rawText, opts);
+				const cleaned = cleanAiText(rawText);
 
 				if (cleaned) {
 					navigator.clipboard.writeText(cleaned).catch((err) => {
