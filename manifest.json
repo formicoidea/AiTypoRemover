@@ -1,6 +1,6 @@
 {
   "name": "AI Typo Remover – Clean Up AI‑Generated Text",
-  "version": "0.0",
+  "version": "1.0",
   "description": "An extension that removes typos gernerated by AI in text outputs.",
   "manifest_version": 3,
   "permissions": [

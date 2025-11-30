@@ -23,3 +23,4 @@ coverage/
 # Divers
 .env
 .env.local
+.zip
